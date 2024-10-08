@@ -1,0 +1,37 @@
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%; /* Preencher a largura da tela */
+  height: 100vh; /* Preencher a altura da tela */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(158, 145, 194);
+}
+
+.container {
+  display: flex;
+  flex-direction: column; /* Organiza os elementos em coluna */
+  align-items: center; /* Centraliza horizontalmente */
+}
+
+video {
+  margin-bottom: 20px; /* Espaçamento entre o vídeo e os botões */
+  display: none; /* Inicialmente ocultar o vídeo */
+ 
+}
+
+#messageBox {
+  display: none; /* Oculta a caixa de mensagem inicialmente */
+  width: 200px;
+  height: 200px;
+  background-color: rgba(255, 255, 255, 0.8); /* Fundo branco semitransparente */
+  border: 2px solid rgb(0, 0, 0);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 18px;
+  color: rgb(0, 0, 0);
+}
