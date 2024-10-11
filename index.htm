@@ -12,14 +12,16 @@
     <video id="videoElement" autoplay width="420" height="260" muted></video>
     <div id="messageBox">Câmera parada. Clique em "Iniciar Câmera" para começar.</div>
      
-  <br>
+    <br>
     <div>
-    <button id="startButton">Iniciar Câmera</button>
-    <button id="stopButton">Parar Câmera</button>
-   </div>
+      <button id="startButton">Iniciar Câmera</button>
+      <button id="stopButton">Parar Câmera</button>
+    </div>
   </div>
 
-  <script src="./assets/js/index.js"></script>  
+  <!-- Carregar a biblioteca face-api.min.js primeiro -->
   <script src="./assets/lib/face-api/face-api.min.js"></script>
+  <!-- Carregar o seu script personalizado depois -->
+  <script src="./assets/js/index.js"></script>  
 </body>
 </html>

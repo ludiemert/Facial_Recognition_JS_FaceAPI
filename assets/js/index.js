@@ -49,7 +49,7 @@ const stopVideo = () => {
 startButton.addEventListener("click", startVideo);
 stopButton.addEventListener("click", stopVideo);
 
-// Importa modelos de redes neurais da face-api
+// Importar modelos de redes neurais da face-api
 Promise.all([
 	faceapi.nets.tinyFaceDetector.loadFromUri("/assets/lib/face-api/models"),
 	faceapi.nets.faceLandmark68Net.loadFromUri("/assets/lib/face-api/models"),
@@ -59,4 +59,29 @@ Promise.all([
 	faceapi.nets.ssdMobilenetv1.loadFromUri("/assets/lib/face-api/models"),
 ]).then(() => {
 	console.log("Modelos carregados com sucesso.");
+});
+
+//cria um canvas para colocar todas as inf que estamos utilizando
+video.addEventListener("play", async () => {
+	const existingCanvas = document.querySelector("canvas");
+	if (existingCanvas) {
+		existingCanvas.remove(); // Remove o canvas anterior se existir
+	}
+	const canvas = faceapi.createCanvasFromMedia(video);
+	const canvasSize = {
+		width: video.videoWidth,
+		height: video.videoHeight,
+	};
+	faceapi.matchDimensions(canvas, canvasSize);
+	document.body.appendChild(canvas);
+
+	// detectar funções da face-api
+	setInterval(async () => {
+		const detections = await faceapi.detectAllFaces(
+			video,
+			new faceapi.TinyFaceDetectorOptions(),
+		);
+		const resizedDetections = faceapi.resizeResults(detections, canvasSize);
+		faceapi.draw.drawDetections(canvas, resizedDetections);
+	}, 100);
 });
