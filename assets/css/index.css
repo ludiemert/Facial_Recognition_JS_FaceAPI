@@ -7,18 +7,21 @@ body {
   align-items: center;
   justify-content: center;
   background-color: rgb(158, 145, 194);
+  position: relative; /* Define a posição relativa do body para que o canvas seja posicionado em relação ao body */
 }
 
 .container {
   display: flex;
   flex-direction: column; /* Organiza os elementos em coluna */
   align-items: center; /* Centraliza horizontalmente */
+  position: relative; /* Define a posição relativa da div container */
 }
 
 video {
   margin-bottom: 20px; /* Espaçamento entre o vídeo e os botões */
-  display: none; /* Inicialmente ocultar o vídeo */
- 
+  display: block; /* Certifica-se de que o vídeo será exibido */
+  position: relative; /* O vídeo precisa estar na mesma posição relativa */
+  z-index: 1; /* Coloca o vídeo abaixo do canvas */
 }
 
 #messageBox {
@@ -38,6 +41,6 @@ video {
 
 canvas {
   position: absolute;
-  width: 300px;
-
+  z-index: 2; /* Coloca o canvas acima do vídeo */
+  pointer-events: none; /* Para garantir que o canvas não bloqueie a interação com o vídeo */
 }

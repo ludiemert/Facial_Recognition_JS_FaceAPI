@@ -61,27 +61,43 @@ Promise.all([
 	console.log("Modelos carregados com sucesso.");
 });
 
-//cria um canvas para colocar todas as inf que estamos utilizando
+// Cria um canvas para colocar todas as informações que estamos utilizando
 video.addEventListener("play", async () => {
 	const existingCanvas = document.querySelector("canvas");
 	if (existingCanvas) {
 		existingCanvas.remove(); // Remove o canvas anterior se existir
 	}
 	const canvas = faceapi.createCanvasFromMedia(video);
-	const canvasSize = {
-		width: video.videoWidth,
-		height: video.videoHeight,
-	};
-	faceapi.matchDimensions(canvas, canvasSize);
+	const canvasSize = video.getBoundingClientRect(); // Usa as dimensões exibidas do vídeo
+	faceapi.matchDimensions(canvas, {
+		width: canvasSize.width,
+		height: canvasSize.height,
+	});
 	document.body.appendChild(canvas);
 
-	// detectar funções da face-api
+	// Fator de escala para reduzir o tamanho do retângulo
+	const scaleFactor = 0.8; // Ajuste esse valor conforme necessário
+
+	// Detectar funções da face-api
 	setInterval(async () => {
 		const detections = await faceapi.detectAllFaces(
 			video,
 			new faceapi.TinyFaceDetectorOptions(),
 		);
+
 		const resizedDetections = faceapi.resizeResults(detections, canvasSize);
-		faceapi.draw.drawDetections(canvas, resizedDetections);
+
+		canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height); // Limpa o canvas
+
+		// Reduzir o tamanho dos retângulos de detecção
+		for (const detection of resizedDetections) {
+			const { box } = detection;
+			box.width *= scaleFactor; // Aplica o fator de escala na largura
+			box.height *= scaleFactor; // Aplica o fator de escala na altura
+			box.x += (box.width * (1 - scaleFactor)) / 2; // Centraliza a nova largura
+			box.y += (box.height * (1 - scaleFactor)) / 2; // Centraliza a nova altura
+		}
+
+		faceapi.draw.drawDetections(canvas, resizedDetections); // Desenha as detecções no canvas
 	}, 100);
 });
