@@ -66,12 +66,23 @@ video.addEventListener("play", async () => {
 	if (existingCanvas) {
 		existingCanvas.remove();
 	}
+
 	// Crie um canvas com base no vídeo
-	const canvas = faceapi.createCanvasFromMedia(video);
-	// Ajuste o tamanho do canvas para o tamanho real do vídeo
-	const displaySize = { width: video.videoWidth, height: video.videoHeight };
-	faceapi.matchDimensions(canvas, displaySize);
+	const canvas = document.createElement("canvas");
+	const ctx = canvas.getContext("2d");
+
+	// Ajuste o tamanho do canvas para o tamanho real do vídeo, mas menor
+	const displaySize = {
+		width: video.videoWidth * 0.7,
+		height: video.videoHeight * 0.7,
+	};
+
+	canvas.width = displaySize.width;
+	canvas.height = displaySize.height;
+
 	document.body.appendChild(canvas);
+
+	faceapi.matchDimensions(canvas, displaySize);
 
 	// Detectar faces e landmarks periodicamente
 	setInterval(async () => {
@@ -83,13 +94,16 @@ video.addEventListener("play", async () => {
 					scoreThreshold: 0.5,
 				}),
 			)
-			.withFaceLandmarks();
-		// Redimensione os resultados da detecção para corresponder ao tamanho do vídeo
+			.withFaceLandmarks()
+			.withFaceExpressions();
+
+		// Redimensione os resultados da detecção para corresponder ao tamanho do canvas
 		const resizedDetections = faceapi.resizeResults(detections, displaySize);
 		// Limpe o canvas antes de desenhar novamente
-		canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		// Desenhe as detecções e landmarks
 		faceapi.draw.drawDetections(canvas, resizedDetections);
 		faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+		faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
 	}, 100);
 });
