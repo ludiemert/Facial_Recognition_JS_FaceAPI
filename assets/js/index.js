@@ -47,6 +47,38 @@ const stopVideo = () => {
 startButton.addEventListener("click", startVideo);
 stopButton.addEventListener("click", stopVideo);
 
+// Carregar fotos de labels
+const loadLabels = async () => {
+	const labels = ["LucianaDiemert"]; // Nome das pessoas que quero reconhecer
+	return Promise.all(
+		labels.map(async (label) => {
+			const descriptions = [];
+			for (let i = 1; i <= 5; i++) {
+				const img = await faceapi.fetchImage(
+					`/assets/lib/face-api/labels/${label}/${i}.jpg`,
+				); // Importar imgs
+
+				const detections = await faceapi
+					.detectSingleFace(
+						img, // Apenas a imagem
+						new faceapi.TinyFaceDetectorOptions({
+							inputSize: 320,
+							scoreThreshold: 0.5,
+						}),
+					)
+					.withFaceLandmarks()
+					.withFaceExpressions()
+					.withFaceDescriptor();
+				if (detections) {
+					descriptions.push(detections.descriptor);
+				}
+			}
+			// Retornar novo objeto que a face-api estará utilizando
+			return new faceapi.LabeledFaceDescriptors(label, descriptions);
+		}),
+	);
+};
+
 // Importar modelos de redes neurais da face-api
 Promise.all([
 	faceapi.nets.tinyFaceDetector.loadFromUri("/assets/lib/face-api/models"),
@@ -79,10 +111,11 @@ video.addEventListener("play", async () => {
 
 	canvas.width = displaySize.width;
 	canvas.height = displaySize.height;
-
 	document.body.appendChild(canvas);
-
 	faceapi.matchDimensions(canvas, displaySize);
+
+	// Carregar fotos de labels
+	const labels = await loadLabels();
 
 	// Detectar faces e landmarks periodicamente
 	setInterval(async () => {
@@ -96,26 +129,48 @@ video.addEventListener("play", async () => {
 			)
 			.withFaceLandmarks()
 			.withFaceExpressions()
-			.withAgeAndGender();
+			.withAgeAndGender()
+			.withFaceDescriptors(); // Detectar as descrições
 
-		// Redimensione os resultados da detecção para corresponder ao tamanho do canvas
+		// Redimensionar os resultados da detecção para corresponder ao tamanho do canvas
 		const resizedDetections = faceapi.resizeResults(detections, displaySize);
-		// Limpe o canvas antes de desenhar novamente
+
+		// Criar o matcher de faces
+		const faceMatcher = new faceapi.FaceMatcher(labels, 0.8);
+
+		// Obter os melhores resultados
+		const results = resizedDetections.map((d) =>
+			faceMatcher.findBestMatch(d.descriptor),
+		);
+
+		// Limpar o canvas antes de desenhar novamente
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		// Desenhe as detecções e landmarks
+
+		// Desenhar as detecções e landmarks
 		faceapi.draw.drawDetections(canvas, resizedDetections);
 		faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
 		faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
-		//detect AGE
+
+		// Desenhar as idades e gêneros
 		for (const detection of resizedDetections) {
 			const { age, gender, genderProbability } = detection;
 			new faceapi.draw.DrawTextField(
 				[
 					`${Number.parseInt(age, 10)} years`,
-					`${gender} (${Number.parseInt(genderProbability * 100, 10)}) %`,
+					`${gender} (${Number.parseInt(genderProbability * 100, 10)}%)`,
 				],
 				detection.detection.box.topRight,
 			).draw(canvas);
 		}
+
+		// Desenhar os labels e distâncias das faces
+		results.forEach((result, index) => {
+			const box = resizedDetections[index].detection.box;
+			const { label, distance } = result;
+			new faceapi.draw.DrawTextField(
+				[`${label} (${distance.toFixed(2)})`],
+				box.bottomRight,
+			).draw(canvas);
+		});
 	}, 100);
 });
