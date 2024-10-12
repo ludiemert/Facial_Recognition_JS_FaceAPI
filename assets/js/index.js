@@ -95,7 +95,8 @@ video.addEventListener("play", async () => {
 				}),
 			)
 			.withFaceLandmarks()
-			.withFaceExpressions();
+			.withFaceExpressions()
+			.withAgeAndGender();
 
 		// Redimensione os resultados da detecção para corresponder ao tamanho do canvas
 		const resizedDetections = faceapi.resizeResults(detections, displaySize);
@@ -105,5 +106,16 @@ video.addEventListener("play", async () => {
 		faceapi.draw.drawDetections(canvas, resizedDetections);
 		faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
 		faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+		//detect AGE
+		for (const detection of resizedDetections) {
+			const { age, gender, genderProbability } = detection;
+			new faceapi.draw.DrawTextField(
+				[
+					`${Number.parseInt(age, 10)} years`,
+					`${gender} (${Number.parseInt(genderProbability * 100, 10)}) %`,
+				],
+				detection.detection.box.topRight,
+			).draw(canvas);
+		}
 	}, 100);
 });
