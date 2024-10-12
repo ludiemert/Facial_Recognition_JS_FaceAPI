@@ -2,8 +2,7 @@ const video = document.getElementById("videoElement");
 const messageBox = document.getElementById("messageBox");
 const startButton = document.getElementById("startButton");
 const stopButton = document.getElementById("stopButton");
-
-let stream; // Variável para armazenar o stream da câmera
+let stream;
 
 // Função para iniciar o vídeo da câmera
 const startVideo = async () => {
@@ -13,7 +12,6 @@ const startVideo = async () => {
 			(device) =>
 				device.kind === "videoinput" && device.label.includes("04f2:b3f6"),
 		);
-
 		if (videoDevice) {
 			stream = await navigator.mediaDevices.getUserMedia({
 				video: { deviceId: { exact: videoDevice.deviceId } },
@@ -63,41 +61,35 @@ Promise.all([
 
 // Cria um canvas para colocar todas as informações que estamos utilizando
 video.addEventListener("play", async () => {
+	// Remove canvas existente, se houver
 	const existingCanvas = document.querySelector("canvas");
 	if (existingCanvas) {
-		existingCanvas.remove(); // Remove o canvas anterior se existir
+		existingCanvas.remove();
 	}
+	// Crie um canvas com base no vídeo
 	const canvas = faceapi.createCanvasFromMedia(video);
-	const canvasSize = video.getBoundingClientRect(); // Usa as dimensões exibidas do vídeo
-	faceapi.matchDimensions(canvas, {
-		width: canvasSize.width,
-		height: canvasSize.height,
-	});
+	// Ajuste o tamanho do canvas para o tamanho real do vídeo
+	const displaySize = { width: video.videoWidth, height: video.videoHeight };
+	faceapi.matchDimensions(canvas, displaySize);
 	document.body.appendChild(canvas);
 
-	// Fator de escala para reduzir o tamanho do retângulo
-	const scaleFactor = 0.8; // Ajuste esse valor conforme necessário
-
-	// Detectar funções da face-api
+	// Detectar faces e landmarks periodicamente
 	setInterval(async () => {
-		const detections = await faceapi.detectAllFaces(
-			video,
-			new faceapi.TinyFaceDetectorOptions(),
-		);
-
-		const resizedDetections = faceapi.resizeResults(detections, canvasSize);
-
-		canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height); // Limpa o canvas
-
-		// Reduzir o tamanho dos retângulos de detecção
-		for (const detection of resizedDetections) {
-			const { box } = detection;
-			box.width *= scaleFactor; // Aplica o fator de escala na largura
-			box.height *= scaleFactor; // Aplica o fator de escala na altura
-			box.x += (box.width * (1 - scaleFactor)) / 2; // Centraliza a nova largura
-			box.y += (box.height * (1 - scaleFactor)) / 2; // Centraliza a nova altura
-		}
-
-		faceapi.draw.drawDetections(canvas, resizedDetections); // Desenha as detecções no canvas
+		const detections = await faceapi
+			.detectAllFaces(
+				video,
+				new faceapi.TinyFaceDetectorOptions({
+					inputSize: 320,
+					scoreThreshold: 0.5,
+				}),
+			)
+			.withFaceLandmarks();
+		// Redimensione os resultados da detecção para corresponder ao tamanho do vídeo
+		const resizedDetections = faceapi.resizeResults(detections, displaySize);
+		// Limpe o canvas antes de desenhar novamente
+		canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+		// Desenhe as detecções e landmarks
+		faceapi.draw.drawDetections(canvas, resizedDetections);
+		faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
 	}, 100);
 });

@@ -1,46 +1,29 @@
 body {
   margin: 0;
   padding: 0;
-  width: 100%; /* Preencher a largura da tela */
-  height: 100vh; /* Preencher a altura da tela */
+  width: 100%;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: rgb(158, 145, 194);
-  position: relative; /* Define a posição relativa do body para que o canvas seja posicionado em relação ao body */
 }
-
 .container {
   display: flex;
-  flex-direction: column; /* Organiza os elementos em coluna */
-  align-items: center; /* Centraliza horizontalmente */
-  position: relative; /* Define a posição relativa da div container */
-}
-
-video {
-  margin-bottom: 20px; /* Espaçamento entre o vídeo e os botões */
-  display: block; /* Certifica-se de que o vídeo será exibido */
-  position: relative; /* O vídeo precisa estar na mesma posição relativa */
-  z-index: 1; /* Coloca o vídeo abaixo do canvas */
-}
-
-#messageBox {
-  display: none; /* Oculta a caixa de mensagem inicialmente */
-  width: 200px;
-  height: 200px;
-  background-color: rgba(255, 255, 255, 0.8); /* Fundo branco semitransparente */
-  border: 2px solid rgb(0, 0, 0);
-  border-radius: 10px;
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 18px;
-  color: rgb(0, 0, 0);
+  position: relative;
 }
-
+video {
+  margin-bottom: 20px;
+  display: block;
+  position: relative;
+  z-index: 1; /* Certifique-se de que o vídeo esteja atrás do canvas */
+  max-width: 100%;
+  height: auto;
+}
 canvas {
   position: absolute;
-  z-index: 2; /* Coloca o canvas acima do vídeo */
-  pointer-events: none; /* Para garantir que o canvas não bloqueie a interação com o vídeo */
+  z-index: 2; /* Certifique-se de que o canvas fique sobre o vídeo */
+  pointer-events: none;
 }
