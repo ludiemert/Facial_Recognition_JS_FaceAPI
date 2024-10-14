@@ -89,13 +89,11 @@ Real-Time Recognition: A setInterval periodically runs face detection, landmarks
 ## License
 - This project is licensed under the MIT License.
 ---
----
+
 
 ### 📦 Contribution
 
  - Feel free to contribute by submitting pull requests or reporting issues.
-
----
 
 - #### My LinkedIn - [![Linkedin Badge](https://img.shields.io/badge/-LucianaDiemert-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/lucianadiemert/)](https://www.linkedin.com/in/lucianadiemert/)
 
@@ -106,7 +104,8 @@ Real-Time Recognition: A setInterval periodically runs face detection, landmarks
 #### [**Luciana Diemert**](https://github.com/ludiemert)
 
 🛠 Full-Stack Developer <br>
-📍 São Jose dos Campos – SP - Brazil
+🖥️ Python Enthusiast | Computer Vision | AI Integrations <br>
+📍 São Jose dos Campos – SP, Brazil
 
 <a href="https://www.linkedin.com/in/lucianadiemert" target="_blank"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white" alt="LinkedIn Badge" height="25"></a>&nbsp;
 <a href="mailto:lucianadiemert@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-D14836?style=flat&logo=gmail&logoColor=white" alt="Gmail Badge" height="25"></a>&nbsp;
@@ -114,6 +113,4 @@ Real-Time Recognition: A setInterval periodically runs face detection, landmarks
 <a href="https://www.github.com/ludiemert" target="_blank"><img src="https://img.shields.io/badge/GitHub-100000?style=flat&logo=github&logoColor=white" alt="GitHub Badge" height="25"></a>&nbsp;
 
 <br clear="left"/>
-
-
 
